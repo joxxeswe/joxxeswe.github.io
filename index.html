@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html ng-app="app">
+
+<head>
+  <meta charset="utf-8"/>
+  <title>Borsdata parser</title>
+  <link rel="stylesheet" type="text/css" href="style.min.css">
+  <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular.min.js" type="text/javascript"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.0/angular-sanitize.js"></script>
+  <script src="jquery.stickytableheaders.min.js" type="text/javascript"></script>
+</head>
+
+<div ng-controller="controller">
+    <div id="upload" class="box">
+      <form>
+        <label for="file" id="file-label">Välj en fil att ladda upp</label>
+        <input id="file" type="file" class="inputfile">
+        <button id="file-button" ng-click="getFile()" style="display:none;">Ladda upp</button> <br/>
+      </form>
+    </div>
+    <div id="filter" class="box" ng-show="showResult">
+      <label for="filters">Lägg till filter</label>
+      <select id="filters" ng-change="addFilter()" ng-model="selectedFilter" ng-options="f.name for f in filterData">
+      </select>
+      <table cellspacing="0" cellpadding="0" ng-show="currFilter.length > 0" style="width:100%">
+        <tr ng-repeat="o in currFilter">
+          <td>{{ o.name }}</td>
+          <td ng--show='o.type=="f"'><label for="val-{{o.index}}-min">min</label></td>
+          <td ng--show='o.type=="f"'><input type="text" id="val-{{o.index}}-min" ng-model="o.min" size="5" ng-change="filter()"/></td>
+          <td ng--show='o.type=="f"'><label for="val-{{o.index}}-max">max</label></td>
+          <td ng--show='o.type=="f"'><input type="text" id="val-{{o.index}}-max" ng-model="o.max" size="5" ng-change="filter()"/></td>
+          <td ng-show='o.type=="s"'><label for="val-{{o.index}}-equal">innehåller</label></td>
+          <td ng-show='o.type=="s"' colspan="3"><input type="text" id="val-{{o.index}}-equal" ng-model="o.equal" size="40" ng-change="filter()"/></td>
+          <td><button ng-click="removeFilter(o.index)">X</button></td>
+        </tr>
+      </table>
+    </div>
+  <div ng-show="showResult">
+    <table id="data" class="box" cellspacing="0" cellpadding="0">
+      <thead>
+        <tr>
+          <th ng-repeat="cell in headerData track by $index">
+            {{ cell.name}}
+          </th>
+        </tr>
+      </thead>
+    <tbody>
+      <tr ng-repeat="row in bodyDataFiltered |limitTo:showMax">
+        <td ng-repeat="cell in row track by $index" ng-class="getClass(cell)" ng-bind-html="formatCell(headerData[$index],cell,0)">
+    
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <button ng-click='showMoreResults()' ng-disabled="showMax >= bodyDataFiltered.length">Visa fler</button>
+</div>
+</div>
+<script src="app.min.js"></script>
+</html>
